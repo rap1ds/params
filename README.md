@@ -161,3 +161,25 @@ Run a given block only if value is defined.
 params.with(":user:location:address") { |address| puts "Address: #{address}"} } # => "Address: Betonimiehenkuja 5"
 params.with(":user:location:city") { |city| puts "City: #{city}"} } # => nothing
 ```
+
+## Examples
+
+### Supporting old URL params
+
+Before:
+
+```ruby
+if !params[:view] && params[:map] == "true" then
+  redirect_params = params.except(:map).merge({view: "map"})
+  redirect_to url_for(redirect_params), status: :moved_permanently
+end
+```
+
+After:
+
+```ruby
+Params.new(params).with(:map, "true") do |p, value|
+  redirect_params = p.mapTo(:map, :view, "map")
+  redirect_to url_for(redirect_params), status: :moved_permanently
+end
+```
